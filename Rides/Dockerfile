@@ -5,6 +5,8 @@ RUN apt-get update && \
     apt-get install -y python3-pip && \
     pip3 install Flask-PyMongo==2.3.0 requests pandas
 
+ENV TEAM_NAME=CC_0195_0309
+
 WORKDIR /app
 
 COPY . /app

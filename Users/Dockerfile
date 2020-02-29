@@ -7,6 +7,8 @@ RUN apt-get update && \
     pip3 install Flask-PyMongo==2.3.0 && \
     pip3 install requests
 
+ENV TEAM_NAME=CC_0195_0309
+
 WORKDIR /app
 
 COPY . /app

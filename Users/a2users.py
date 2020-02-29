@@ -14,7 +14,7 @@ from datetime import datetime
 # from gevent.pywsgi import WSGIServer
 
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://users:27017/RideShareuser'
+app.config['MONGO_URI'] = 'mongodb://user_db:27017/RideShareuser'
 app.config['JSON_SORT_KEYS']=False
 @app.route('/')
 @app.route('/index')

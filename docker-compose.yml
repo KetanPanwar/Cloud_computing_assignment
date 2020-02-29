@@ -1,25 +1,29 @@
-version: '3'
-services :
+version: "3"
+services:
   rides:
     container_name: rides
     restart: always
     build: ./Rides
     image: rides:latest
-    command: python3 a2rides.py
     ports:
       - 8000:5050
     links:
       - users
-    environment:
-      - TEAM_NAME=CC_0195_0309
+    depends_on:
+      - rides_db
   users:
     container_name: users
     restart: always
     build: ./Users
     image: users:latest
-    command: python3 a2users.py
     ports:
       - 8080:5000
-    environment:
-      - TEAM_NAME=CC_0195_0309
+    depends_on:
+      - user_db
+  user_db:
+    container_name: users_db
+    image: mongo
 
+  rides_db:
+    container_name: rides_db
+    image: mongo
