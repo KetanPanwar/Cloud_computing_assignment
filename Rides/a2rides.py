@@ -14,7 +14,7 @@ from datetime import datetime
 # from gevent.pywsgi import WSGIServer
 
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/RideSharerides'
+app.config['MONGO_URI'] = 'mongodb://rides:27017/RideSharerides'
 app.config['JSON_SORT_KEYS']=False
 @app.route('/')
 @app.route('/index')
@@ -53,7 +53,7 @@ def read_data1():
 #     d["username"] = "three"
 #     data = json(d)
                 print("hey")
-                resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=data)
+                resp_send = requests.post("http://users:5000/api/v1/db/read",json=data)
                 print("hi")
                 if(resp_send.status_code == 200):
                         return json.loads(resp_send.content),200
@@ -81,7 +81,7 @@ def create_new_ride():
                 print("timestamp",data['timestamp'])
                 print("source",data['source'],type(data['source']))
                 print("destination",data['destination'],type(data['destination']))
-                resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=usrd)
+                resp_send = requests.post("http://users:5000/api/v1/db/read",json=usrd)
                 print(resp_send.content)
                 s = dumps(resp_send.content)
                 print(s)
@@ -123,7 +123,7 @@ def create_new_ride():
                     fata["source"]=sourced
                     fata["destination"]=destinationd
                     fata["query"]="insert"
-                    resp_send = requests.post("http://localhost:5050/api/v1/db/write",json=fata)
+                    resp_send = requests.post("http://rides:5050/api/v1/db/write",json=fata)
                     print("recieved")
                     return jsonify({}),201
                 else:
@@ -151,7 +151,7 @@ def display_up_rides():
                         return jsonify({}),400
                 data = {"source": source,"destination":destination}
                 print(source,destination)
-                resp_send = requests.post("http://localhost:5050/api/v1/db/read",json=data)
+                resp_send = requests.post("http://rides:5050/api/v1/db/read",json=data)
                 s = dumps(resp_send.content)
                 print(s)
                 #print(s,resp_send.content)
@@ -187,7 +187,7 @@ def display_up_rides():
 def details_of_rides(rideId):
         if request.method == 'GET':
                 data = {"rideId": int(rideId)}
-                resp_send = requests.post("http://localhost:5050/api/v1/db/read",json=data)
+                resp_send = requests.post("http://rides:5050/api/v1/db/read",json=data)
                 s = dumps(resp_send.content)
                 #print(s,resp_send.content)
                 res = json.loads(resp_send.content)
@@ -213,8 +213,8 @@ def details_of_rides(rideId):
                 usr =  {"username": data["username"]}
                 data1 = {"rideId": int(rideId)}
                 #print("ent",type(data1))
-                resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=usr)
-                resp_send1 = requests.post("http://localhost:5050/api/v1/db/read",json=data1)
+                resp_send = requests.post("http://users:5000/api/v1/db/read",json=usr)
+                resp_send1 = requests.post("http://rides:5050/api/v1/db/read",json=data1)
                 if(resp_send.status_code==200 and resp_send1.status_code==200):
                         od = OrderedDict() 
                         od["rideId"]=int(rideId)
@@ -224,7 +224,7 @@ def details_of_rides(rideId):
                         d=d[0]
                         # return d['users']
                         if usr["username"] not in d["users"]:
-                                resp_send = requests.post("http://localhost:5050/api/v1/db/write",json=od)
+                                resp_send = requests.post("http://rides:5050/api/v1/db/write",json=od)
                                 print(resp_send.status_code)
                                 return jsonify({}),200
                         else:
@@ -233,12 +233,12 @@ def details_of_rides(rideId):
                         return jsonify({}),204
         elif(request.method == 'DELETE'):
                 data = {"rideId":int(rideId)}
-                resp_send1 = requests.post("http://localhost:5050/api/v1/db/read",json=data)
+                resp_send1 = requests.post("http://rides:5050/api/v1/db/read",json=data)
                 if resp_send1.status_code==400:
                         return jsonify({}),400
                 elif (resp_send1.status_code==200):
                         data["dtype"]="del_one"
-                        resp_send = requests.delete("http://localhost:5050/api/v1/db/write",json=data)
+                        resp_send = requests.delete("http://rides:5050/api/v1/db/write",json=data)
                         return jsonify({}),resp_send.status_code
 
         else:
@@ -270,7 +270,7 @@ def write_data():
                 # print(data)
                 key = list(data.keys())[0]
                 usr = {key:data[key]}
-                # resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=usr)
+                # resp_send = requests.post("http://users:5000/api/v1/db/read",json=usr)
                 # res = json.loads(resp_send.content)
                 #print(res,key,usr)
                 if(data["query"]=="insert"):
@@ -312,7 +312,7 @@ def write_data():
                         mongo.db.abcd.delete_one({key : usr})
                         key="created_by"
                         d={key:usr}
-                        resp_send = requests.post("http://localhost:5050/api/v1/db/read",json=d)
+                        resp_send = requests.post("http://rides:5050/api/v1/db/read",json=d)
                         if (resp_send.status_code==400):
                                 print("chaarsoo")
                                 return jsonify({}),400
@@ -321,7 +321,7 @@ def write_data():
                         for i in res:
                                 mongo.db.abcd.delete_one(i)
                         
-                        resp_send = requests.post("http://localhost:5050/api/v1/db/read",json={})
+                        resp_send = requests.post("http://rides:5050/api/v1/db/read",json={})
                         res = json.loads(resp_send.content)
                         print("res in final",res,type(res),type(res[0]))
                         for i in res:

@@ -14,7 +14,7 @@ from datetime import datetime
 # from gevent.pywsgi import WSGIServer
 
 app = Flask(__name__)
-app.config['MONGO_URI'] = 'mongodb://localhost:27017/RideShareuser'
+app.config['MONGO_URI'] = 'mongodb://users:27017/RideShareuser'
 app.config['JSON_SORT_KEYS']=False
 @app.route('/')
 @app.route('/index')
@@ -59,14 +59,14 @@ def add_user():
                 usr =  data["username"] 
                 key = list(data.keys())[0]
                 usr = {key:data[key]}
-                resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=usr)
+                resp_send = requests.post("http://users:5000/api/v1/db/read",json=usr)
                 if(resp_send.status_code==400):
                         pattern = re.compile(r'\b[0-9a-f]{40}\b')
                         #match = re.match(pattern, data["password"])
                         match = validate_pswd(data["password"])
                         if match:
                                 data["query"]="insert"
-                                resp_send = requests.post("http://localhost:5000/api/v1/db/write",json=data)
+                                resp_send = requests.post("http://users:5000/api/v1/db/write",json=data)
                                 return jsonify({}),201
                         else:
                                 return jsonify({}),400
@@ -87,7 +87,7 @@ def read_data1():
 #     d["username"] = "three"
 #     data = json(d)
                 print("hey")
-                resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=data)
+                resp_send = requests.post("http://users:5000/api/v1/db/read",json=data)
                 print("hi")
                 if(resp_send.status_code == 200):
                         return json.loads(resp_send.content),200
@@ -99,12 +99,12 @@ def read_data1():
 def remove_user(username):
         if request.method == 'DELETE':
                 data = {"username" : username}
-                resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=data)
+                resp_send = requests.post("http://users:5000/api/v1/db/read",json=data)
                 if(resp_send.status_code == 400):
                         return jsonify({}),400
                 elif(resp_send.status_code == 200):
                         data["dtype"]="del_two"
-                        resp_del = requests.delete("http://localhost:5050/api/v1/db/write",json=data)
+                        resp_del = requests.delete("http://rides:5050/api/v1/db/write",json=data)
                 return jsonify({}),200
         else:
                 return jsonify({}),405
@@ -129,7 +129,7 @@ def list_all_users():
        
         if request.method == 'GET':
                 data = {"userquery": 1}
-                resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=data)
+                resp_send = requests.post("http://users:5000/api/v1/db/read",json=data)
                 s = dumps(resp_send.content)
                 print(s)
                 #print(s,resp_send.content)
@@ -167,7 +167,7 @@ def write_data():
                 # print(data)
                 key = list(data.keys())[0]
                 usr = {key:data[key]}
-                # resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=usr)
+                # resp_send = requests.post("http://users:5000/api/v1/db/read",json=usr)
                 # res = json.loads(resp_send.content)
                 #print(res,key,usr)
                 if(data["query"]=="insert"):
@@ -209,7 +209,7 @@ def write_data():
                         mongo.db.abcd.delete_one({key : usr})
                         key="created_by"
                         d={key:usr}
-                        resp_send = requests.post("http://localhost:5000/api/v1/db/read",json=d)
+                        resp_send = requests.post("http://users:5000/api/v1/db/read",json=d)
                         if (resp_send.status_code==400):
                                 print("chaarsoo")
                                 return jsonify({}),400
@@ -218,7 +218,7 @@ def write_data():
                         for i in res:
                                 mongo.db.abcd.delete_one(i)
                         
-                        resp_send = requests.post("http://localhost:5000/api/v1/db/read",json={})
+                        resp_send = requests.post("http://users:5000/api/v1/db/read",json={})
                         res = json.loads(resp_send.content)
                         print("res in final",res,type(res),type(res[0]))
                         for i in res:
