@@ -1,0 +1,27 @@
+version: '3'
+services :
+  rides:
+    container_name: rides
+    restart: always
+    build: ./Rides
+    image: rides:latest
+    command: python a2rides.py
+    ports:
+      - 8000:5050
+    links:
+      - user_service
+    environment:
+      - TEAM_NAME=CC_0195_0309
+  users:
+    container_name: users
+    restart: always
+    build: ./Users
+    image: users:latest
+    command: python a2users.py
+    ports:
+      - 8080:5000
+    links:
+      - user_service
+    environment:
+      - TEAM_NAME=CC_0195_0309
+
